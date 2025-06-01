@@ -22,27 +22,44 @@ form.addEventListener("submit", function (e) {
     return; 
   }
   
+  if (editIndex === -1) {
   const student={ name,lastName,grade };
    students.push(student)
    addStudentToTable(student);
-   updateAverage();
-  form.reset();
+  } else {
+    students[editIndex].name = name;
+    students[editIndex].lastName = lastName;
+    students[editIndex].grade = grade;
+    updateTable();
+    editIndex = -1;
+    }
+   
+    updateAverage();
+    form.reset();
 });
  
-  function addStudentToTable(student) {
-    const row=document.createElement("tr");
-    row.innerHTML=`
+function addStudentToTable(student) {
+  const row=document.createElement("tr");
+    
+  row.innerHTML=`
     <td>${student.name}</td>
     <td>${student.lastName}</td>
     <td>${student.grade.toFixed(1)}</td>
+    <button class="edit">Editar</button>
     <td> <button class="delete">Eliminar</button></td>
    `;
 
-row.querySelector(".delete").addEventListener("click", function(){
+  const rowIndex = students.indexOf(student);
+
+  row.querySelector(".delete").addEventListener("click", function(){
   deleteEstudiante(student,row);
 });
   
-    tabletBody.appendChild(row);
+  row.querySelector(".edit").addEventListener("click", function () {
+    loadStudentIntoForm(student, rowIndex);
+  });
+
+  tabletBody.appendChild(row);
 
   }
  
@@ -56,10 +73,24 @@ row.querySelector(".delete").addEventListener("click", function(){
   }
 
 
-  function updateAverage() {
-    const total = students.reduce((sum, s) => sum + s.grade, 0);
-    const average = total / students.length;
-    averageDisplay.textContent = `Promedio: ${average.toFixed(2)}`;
+  function loadStudentIntoForm(student, index) {
+  document.getElementById("name").value = student.name;
+  document.getElementById("lastName").value = student.lastName;
+  document.getElementById("grade").value = student.grade;
+  editIndex = index;
+}
+
+function updateTable() {
+  tabletBody.innerHTML = "";
+  students.forEach(student => {
+    addStudentToTable(student);
+  });
+}
+
+function updateAverage() {
+  const total = students.reduce((sum, s) => sum + s.grade, 0);
+  const average = students.length ? total / students.length : 0;
+  averageDisplay.textContent = `Promedio: ${average.toFixed(2)}`;
 }
 
 document.getElementById("name").oninvalid = function () {
