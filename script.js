@@ -1,79 +1,78 @@
-const students= [];
+const students = [];
+let editIndex = -1; 
 
 const form = document.getElementById("studentForm");
-const tabletBody = document.querySelector("#studentTable tbody");
+const tableBody = document.querySelector("#studentTable tbody"); 
 const averageDisplay = document.getElementById("averageDisplay");
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  const nameInput= document.getElementById("name");
-  const lastNameInput= document.getElementById("lastName");
-  const gradeInput= document.getElementById("grade");
+  const nameInput = document.getElementById("name");
+  const lastNameInput = document.getElementById("lastName");
+  const gradeInput = document.getElementById("grade");
 
   const name = nameInput.value.trim();
   const lastName = lastNameInput.value.trim();
   const grade = parseFloat(gradeInput.value);
 
-
-
-  if(!name || !lastName || isNaN(grade) || grade < 1 || grade> 7){
-    alert("Error al Ingresar los datos todos los campos deben estar Completados")
-    return; 
+  if (!name || !lastName || isNaN(grade) || grade < 1 || grade > 7) {
+    alert("Error al ingresar los datos. Todos los campos deben estar completados y la nota debe estar entre 1 y 7.");
+    return;
   }
-  
+
   if (editIndex === -1) {
-  const student={ name,lastName,grade };
-   students.push(student)
-   addStudentToTable(student);
+    const student = { name, lastName, grade };
+    students.push(student);
+    addStudentToTable(student);
   } else {
     students[editIndex].name = name;
     students[editIndex].lastName = lastName;
     students[editIndex].grade = grade;
     updateTable();
     editIndex = -1;
-    }
-   
-    updateAverage();
-    form.reset();
+  }
+
+  updateAverage();
+  form.reset();
 });
- 
+
 function addStudentToTable(student) {
-  const row=document.createElement("tr");
-    
-  row.innerHTML=`
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
     <td>${student.name}</td>
     <td>${student.lastName}</td>
     <td>${student.grade.toFixed(1)}</td>
-    <button class="edit">Editar</button>
-    <td> <button class="delete">Eliminar</button></td>
-   `;
+    <td>
+      <button class="edit">Editar</button>
+      <button class="delete">Eliminar</button>
+    </td>
+  `;
 
   const rowIndex = students.indexOf(student);
 
-  row.querySelector(".delete").addEventListener("click", function(){
-  deleteEstudiante(student,row);
-});
-  
+  row.querySelector(".delete").addEventListener("click", function () {
+    deleteStudent(student, row);
+  });
+
   row.querySelector(".edit").addEventListener("click", function () {
     loadStudentIntoForm(student, rowIndex);
   });
 
-  tabletBody.appendChild(row);
+  tableBody.appendChild(row);
+}
 
+function deleteStudent(student, row) {
+  const index = students.indexOf(student);
+  if (index > -1) {
+    students.splice(index, 1);
+    row.remove();
+    updateAverage(); 
   }
- 
-  function deleteEstudiante(student,row){
-    const index=students.indexOf(student);
-    if(index > -1){
-      students.splice(index,1);
-      row.remove();
-      calcularPromedio();
-    }
-  }
+}
 
-
-  function loadStudentIntoForm(student, index) {
+function loadStudentIntoForm(student, index) {
   document.getElementById("name").value = student.name;
   document.getElementById("lastName").value = student.lastName;
   document.getElementById("grade").value = student.grade;
@@ -81,7 +80,7 @@ function addStudentToTable(student) {
 }
 
 function updateTable() {
-  tabletBody.innerHTML = "";
+  tableBody.innerHTML = "";
   students.forEach(student => {
     addStudentToTable(student);
   });
@@ -92,6 +91,7 @@ function updateAverage() {
   const average = students.length ? total / students.length : 0;
   averageDisplay.textContent = `Promedio: ${average.toFixed(2)}`;
 }
+
 
 document.getElementById("name").oninvalid = function () {
   this.setCustomValidity("Por favor ingresa el nombre.");
@@ -113,3 +113,4 @@ document.getElementById("grade").oninvalid = function () {
 document.getElementById("grade").oninput = function () {
   this.setCustomValidity("");
 };
+
