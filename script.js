@@ -79,6 +79,23 @@ function loadStudentIntoForm(student, index) {
   editIndex = index;
 }
 
+function loadStudentIntoForm(student, index) {
+  document.getElementById("Mostrar")
+  const estudiantes=document("Total Estudiantes");
+  let total= estudiantes.length;
+  let debenExamen= 0;
+  let eximidos= 0;
+  
+  
+  estudiantes.forEach(est=> {
+  const nota= parseFloat(est.getAttribute("nota"));
+  if (nota> 5.0 && 6.0) {
+    debenExamen++;
+    } else if (nota>= 6.0);
+    eximidos++;
+  });
+
+}
 function updateTable() {
   tableBody.innerHTML = "";
   students.forEach(student => {
